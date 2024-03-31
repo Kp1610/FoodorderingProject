@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <!-- Include the locally downloaded jsPDF library -->
+    <script src="node_modules\jspdf\dist\jspdf.es.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        displayCartItems();
+        document.getElementById('confirmPayment').addEventListener('click', function() {
+            createAndDownloadPDF();
+        });
+    });
+
+    function displayCartItems() {
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cart = JSON.parse(localStorage.getItem('cart'));
+
+        if (cart && cart.length > 0) {
+            cart.forEach((item, index) => {
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+                cartItem.innerHTML = `
+                    <h3>${item.name}</h3>
+                    <p>Price: Rs${item.price}</p>
+                    <button class="delete-btn" data-index="${index}">Delete</button>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+
+                // Add event listener to delete button
+                const deleteButton = cartItem.querySelector('.delete-btn');
+                deleteButton.addEventListener('click', function() {
+                    deleteCartItem(index);
+                    cartItem.remove(); // Remove the item from the cart display
+                });
+            });
+        } else {
+            const emptyCartMessage = document.createElement('p');
+            emptyCartMessage.textContent = 'Your cart is empty';
+            cartItemsContainer.appendChild(emptyCartMessage);
+        }
+    }
+
+    function deleteCartItem(index) {
+        let cart = JSON.parse(localStorage.getItem('cart'));
+        cart.splice(index, 1); // Remove item from cart array
+        localStorage.setItem('cart', JSON.stringify(cart)); // Update cart in localStorage
+    }
+
+    function createAndDownloadPDF() {
+        const cart = JSON.parse(localStorage.getItem('cart'));
+
+        if (cart && cart.length > 0) {
+            const pdf = new jsPDF();
+            let y = 20;
+
+            pdf.text("Your Food Cart", 20, y);
+            y += 10;
+
+            cart.forEach(item => {
+                pdf.text(`${item.name}: Rs${item.price}`, 20, y);
+                y += 10;
+            });
+
+            pdf.save('cart_items.pdf');
+        } else {
+            alert('Your cart is empty');
+        }
+    }
+</script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh; /* Ensure the background covers the full viewport height */
+        }
+
+        .container {
+            max-width: 1000px; /* Increase the maximum width */
+            margin: 50px auto; /* Increase margin for better centering */
+            background-color: rgba(255, 255, 255, 0.9); /* Add a slight transparency */
+            padding: 40px; /* Increase padding for better spacing */
+            border-radius: 12px; /* Increase border radius */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Enhance box shadow */
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0; /* Remove default margin */
+            margin-bottom: 30px; /* Increase margin bottom */
+            color: #333; /* Darken the text color */
+            font-size: 36px; /* Increase font size */
+        }
+
+        #cart-items {
+            margin-top: 30px; /* Increase margin top */
+        }
+
+        .cart-item {
+            border: 1px solid #ccc;
+            border-radius: 8px; /* Increase border radius */
+            padding: 20px; /* Increase padding for better spacing */
+            margin-bottom: 20px; /* Increase margin bottom */
+            background-color: #fff; /* Ensure cart items have a white background */
+        }
+
+        .cart-item h3 {
+            margin-top: 0;
+            color: #333; /* Darken the text color */
+        }
+
+        .cart-item p {
+            margin-bottom: 0;
+            color: #555; /* Adjust text color */
+        }
+
+        .cart-item:last-child {
+            margin-bottom: 0;
+        }
+
+        p.empty-cart-message {
+            text-align: center;
+            font-style: italic;
+            color: #555; /* Adjust text color */
+        }
+
+        .return-btn, .order-btn, .pay-btn {
+            margin-top: 30px; /* Increase margin top */
+            text-align: center;
+        }
+
+        .return-btn a, .order-btn a, .pay-btn a {
+            text-decoration: none;
+            padding: 12px 24px; /* Adjust padding */
+            background-color: white;
+            color: #333; /* Darken the text color */
+            border-radius: 6px; /* Adjust border radius */
+            border: 1px solid #333; /* Add border */
+            transition: all 0.3s ease; /* Add smooth transition */
+        }
+
+        .return-btn a:hover, .order-btn a:hover, .pay-btn a:hover {
+            background-color: #333; /* Change background color on hover */
+            color: white;
+        }
+
+        .pay-btn a {
+            background-color: #4CAF50; /* Change background color for pay button */
+            color: white;
+            border: 1px solid #4CAF50; /* Adjust border color */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Food Cart</h1> <!-- Title of cart placed at the top -->
+    <div class="return-btn">
+        <a href="index2.php">Return to Home</a>
+    </div>
+    <div class="order-btn">
+        <a href="order.html">Go to Orders</a>
+    </div>
+    <div class="pay-btn">
+        <a href="paymentdone.html" id="confirmPayment">Confirm Payment</a>
+    </div>
+    <div id="cart-items">
+        <!-- Cart items will be dynamically added here -->
+    </div>
+</div>
+
+</body>
+</html>

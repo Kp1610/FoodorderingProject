@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Done</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .payment-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 40px; /* Increased padding */
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px; /* Increased maximum width */
+            width: 80%; /* Responsive width */
+        }
+
+        .tick-mark {
+            color: green;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .order-placed {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .total-amount {
+            font-size: 18px;
+        }
+
+        .countdown {
+            color:red;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="payment-container">
+    <div class="tick-mark">&#10004;</div>
+    <div class="order-placed">Order Placed!</div>
+    <p>Sit-back And Relax While We Deliver Your Order</p>
+    <div class="total-amount" id="total-amount"></div>
+    <div class="countdown" id="countdown">Redirecting in <span id="timer">10</span> seconds</div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        displayTotalAmount();
+        redirectToHomePage();
+    });
+
+    function displayTotalAmount() {
+        const totalAmountContainer = document.getElementById('total-amount');
+        const cart = JSON.parse(localStorage.getItem('cart'));
+        let totalPrice = 0;
+
+        if (cart && cart.length > 0) {
+            cart.forEach((item) => {
+                totalPrice += parseFloat(item.price);
+            });
+        }
+
+        totalAmountContainer.textContent = `Total Payment: Rs${totalPrice.toFixed(2)}`;
+        localStorage.removeItem('cart'); // Clear the cart after payment is done
+    }
+
+    function redirectToHomePage() {
+        let countdown = 5; // Initial countdown value
+        const countdownElement = document.getElementById('timer');
+        const countdownInterval = setInterval(function() {
+            countdownElement.textContent = countdown;
+            countdown--;
+            if (countdown < 0) {
+                clearInterval(countdownInterval);
+                window.location.href = "index2.php"; // Replace "index.html" with the actual homepage URL
+            }
+        }, 500); // 1000 milliseconds = 1 second
+    }
+</script>
+
+</body>
+</html>
